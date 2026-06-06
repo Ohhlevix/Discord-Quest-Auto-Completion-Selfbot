@@ -532,9 +532,11 @@ export class QuestManager implements Iterable<Quest> {
 			return;
 		}
 		// 3. Complete achievement in activity
-		const { token, error: authError } = await Utils.authorizeDiscordSays(
+		const { token, error: authError, activityReferrer } = await Utils.authorizeDiscordSays(
 			applicationId,
+			quest.id,
 			authCode,
+			this.client,
 		);
 		if (authError || !token) {
 			console.error(
@@ -544,7 +546,13 @@ export class QuestManager implements Iterable<Quest> {
 			return;
 		}
 		const { success, error: progressError } =
-			await Utils.progressDiscordSays(applicationId, token, questTarget);
+			await Utils.progressDiscordSays(
+				applicationId,
+				quest.id,
+				token,
+				questTarget,
+				activityReferrer,
+			);
 		if (progressError || !success) {
 			console.error(
 				`Failed to progress quest with Discord Says for application ${applicationName}. Cannot complete the quest.`,
